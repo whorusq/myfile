@@ -2,7 +2,10 @@
   "name": "myfile",
   "version": "1.0.0",
   "description": "The NodeJS static web server.",
-  "main": "index.js",
+  "main": "src/app.js",
+  "bin":{
+    "myfile": "bin/myfile"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
