@@ -24,4 +24,7 @@ myfile -d /home/user1
 
 # show version
 myfile -v
+
+# show help
+myfile -h
 ```
