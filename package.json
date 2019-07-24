@@ -1,9 +1,9 @@
 {
   "name": "myfile",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The NodeJS static web server.",
   "main": "src/app.js",
-  "bin":{
+  "bin": {
     "myfile": "bin/myfile"
   },
   "scripts": {
@@ -14,7 +14,7 @@
     "url": "git+https://github.com/whorusq/myfile.git"
   },
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/whorusq/myfile/issues"
   },
