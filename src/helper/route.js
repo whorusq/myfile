@@ -1,12 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const HandleBars = require('handlebars');
+const FileIcons = require('file-icons-js');
 const Mime = require('mime/lite');
 const promisify = require('util').promisify;
 // import { promisify } from "util";
 const stat = promisify(fs.stat);
 const readdir = promisify(fs.readdir);
-const config = require('../config/default');
 const compress = require('../helper/compress');
 const range = require('../helper/range');
 const util = require('../helper/util');
@@ -17,7 +17,9 @@ const tplPath = path.join(__dirname, '../template/dir.tpl');
 const source = fs.readFileSync(tplPath);
 const tpl = HandleBars.compile(source.toString());
 
-module.exports = async function (req, res, filePath) {
+
+
+module.exports = async function (req, res, filePath, config) {
   try {
     const stats = await stat(filePath);
     if (stats.isFile()) { // 文件
@@ -56,30 +58,37 @@ module.exports = async function (req, res, filePath) {
       rs.pipe(res);
     } else if (stats.isDirectory()) { // 目录
       // 读取目录
-      const files = await readdir(filePath);
+      const fileNames = await readdir(filePath);
 
       // 设置响应头
       res.statusCode = 200;
       res.setHeader('Content-Type', 'text/html; charset=utf-8');
 
       // 以 , 拼接文件和目录名称，输出到浏览器
-      // res.end(files.join(','));
+      // res.end(fileNames.join(','));
       const dir = path.relative(config.root, filePath);
-      const data = {
-        title: 'file list',
-        body: '<p>This is a post about &lt;p&gt; tags</p>',
-        dir: dir ? `/${dir}` : '',
-        files: files.map((file) => {
-          const fileInfo = fs.statSync(path.join(filePath, file));
-          return {
-            fileName: file,
-            path: dir ? `/${dir}` : '',
-            size: util.formatBytes(fileInfo.size),
-            mtime: new Date(fileInfo.mtime).toLocaleString()
-          };
-        })
-      };
-      res.end(tpl(data));
+      const fileRelativePath = dir ? `/${dir}` : '';
+      let dirs = [];
+      let files = fileNames.map((file, i) => {
+        const fileName = file;
+        const fileInfo = fs.statSync(path.join(filePath, fileName));
+        let { fileSize, fileMtime, iconClass } = {};
+        if (fileInfo.isFile()) {
+          fileSize = util.formatBytes(fileInfo.size);
+          fileMtime = new Date(fileInfo.mtime).toLocaleString();
+          iconClass = FileIcons.getClassWithColor(file) || 'text-icon';
+          return { fileName, fileRelativePath, fileSize, fileMtime, iconClass };
+        } else {
+          dirs.push({ fileName, fileRelativePath, fileSize: '-', fileMtime: '-' });
+          return false;
+        }
+      }).filter(f => f !== false);
+
+      // 渲染模版，返回客户端
+      res.end(tpl({
+        title: fileRelativePath ? fileRelativePath : 'myfile',
+        files: [...dirs, ...files]
+      }));
     }
   } catch (ex) {
     res.statusCode = 404;

@@ -22,7 +22,9 @@
     "eslint-config-alloy": "^2.0.5"
   },
   "dependencies": {
+    "file-icons-js": "^1.0.3",
     "handlebars": "^4.1.2",
-    "mime": "^2.4.4"
+    "mime": "^2.4.4",
+    "yargs": "^13.3.0"
   }
 }

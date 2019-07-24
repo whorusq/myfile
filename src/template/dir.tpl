@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>{{title}}</title>
+  <link rel="stylesheet" href="/node_modules/file-icons-js/css/style.css">
   <style>
     #wrap {
       width: 45%;
@@ -38,16 +39,13 @@
       text-decoration: none;
     }
     #wrap table tr td a:hover {
-      /* border-bottom: 1px solid red; */
       color: red;
-      font-weight: bold;
+      /* font-weight: bold; */
     }
-    #wrap ul li a {
-      font-size: 18px;
-      text-decoration: none;
-    }
-    #wrap ul li a:hover {
-      color: orangered;
+    #wrap table tr td i {
+      display: inline-block;
+      width: 15px;
+      margin: 0 10px;
     }
   </style>
 </head>
@@ -61,9 +59,16 @@
       </tr>
       {{#each files}}
       <tr>
-        <td><a href="{{this.path}}/{{this.fileName}}">{{this.fileName}}</a></td>
-        <td class="a-center">{{this.size}}</td>
-        <td class="a-center">{{this.mtime}}</td>
+        <td>
+          {{#if this.iconClass}}
+          <i class="{{this.iconClass}}"></i>
+          {{else}}
+          <i class="">📁</i>
+          {{/if}}
+          <a href="{{this.fileRelativePath}}/{{this.fileName}}">{{this.fileName}}</a>
+        </td>
+        <td class="a-center">{{this.fileSize}}</td>
+        <td class="a-center">{{this.fileMtime}}</td>
       </tr>
       {{/each}}
     </table>
