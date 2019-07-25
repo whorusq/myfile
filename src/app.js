@@ -20,7 +20,10 @@ class Server {
     });
     server.listen(this.conf.port, this.conf.hostname, () => {
       let url = `http://${this.conf.hostname}:${this.conf.port}`;
-      openUrl(url);
+      if (this.conf.auto) {
+        // 使用系统默认浏览器打开服务地址
+        openUrl(url);
+      }
       console.log(`Server is running at ${chalk.bold.green(url)}`);
     });
   }

@@ -12,8 +12,8 @@ npm i -g myfile
 
 ```bash
 # start server with default options.
-# - port: 3333
-# - dir: current directory
+# - server port: 3333
+# - file directory: .
 myfile
 
 # custmize the port
@@ -21,6 +21,10 @@ myfile -p 6666
 
 # custmize the directory
 myfile -d /home/user1
+
+# custmize the root path and server port,
+# and open the url after start the server.
+myfile -d /usr -p 6666 --auto
 
 # show version
 myfile -v
