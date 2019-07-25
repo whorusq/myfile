@@ -69,25 +69,30 @@ module.exports = async function (req, res, filePath, config) {
       const dir = path.relative(config.root, filePath);
       const fileRelativePath = dir ? `/${dir}` : '';
       let dirs = [];
-      let files = fileNames.map((file, i) => {
-        const fileName = file;
-        const fileInfo = fs.statSync(path.join(filePath, fileName));
-        let { fileSize, fileMtime, iconClass } = {};
-        if (fileInfo.isFile()) {
-          fileSize = util.formatBytes(fileInfo.size);
-          fileMtime = new Date(fileInfo.mtime).toLocaleString();
-          iconClass = FileIcons.getClassWithColor(file) || 'text-icon';
-          return { fileName, fileRelativePath, fileSize, fileMtime, iconClass };
-        } else {
-          dirs.push({ fileName, fileRelativePath, fileSize: '-', fileMtime: '-' });
-          return false;
-        }
-      }).filter(f => f !== false);
+      let files = fileNames
+        .map((file, i) => {
+          const fileName = file;
+          const fileInfo = fs.statSync(path.join(filePath, fileName));
+          let { fileSize, fileMtime, iconClass } = {};
+          if (fileInfo.isFile()) {
+            fileSize = util.formatBytes(fileInfo.size);
+            fileMtime = new Date(fileInfo.mtime).toLocaleString();
+            iconClass = FileIcons.getClassWithColor(file) || 'text-icon';
+            return { fileName, fileRelativePath, fileSize, fileMtime, iconClass };
+          } else {
+            dirs.push({ fileName, fileRelativePath, fileSize: '-', fileMtime: '-' });
+            return false;
+          }
+        })
+        .filter(f => f !== false);
 
       // 渲染模版，返回客户端
       res.end(tpl({
         title: fileRelativePath ? fileRelativePath : 'myfile',
-        files: [...dirs, ...files]
+        files: [
+          ...dirs.sort(compare1),
+          ...files.sort(compare1)
+        ]
       }));
     }
   } catch (ex) {
@@ -96,3 +101,18 @@ module.exports = async function (req, res, filePath, config) {
     res.end(`${filePath} is not a file or derectory.`);
   }
 };
+
+/**
+ * 根据文件或目录名排序
+ */
+function compare1(a, b) {
+  let nameA = a.fileName.toLowerCase();
+  let nameB = b.fileName.toLowerCase();
+  if (nameA < nameB) {
+    return -1;
+  }
+  if (nameA > nameB) {
+    return 1;
+  }
+  return 0;
+}
